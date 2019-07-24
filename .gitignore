@@ -1,0 +1,6 @@
+dataset_prep/z_records/
+visualize_reconstructions/
+logs/
+models/norm_model/
+models/ugly_model/
+__pycache__
