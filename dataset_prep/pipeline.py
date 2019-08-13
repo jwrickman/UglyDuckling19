@@ -210,8 +210,8 @@ def get_dataset(input_path,
                 flag_pos_2=None,
                 batch_size=None,
                 seed=None,
-                aug_train=True,
-                aug_val=False,
+                aug_train='full',
+                aug_val='none',
                 rebalance=True):
     """Gets a tf.data.Dataset from '.record' files in input_path directory.
 
@@ -278,7 +278,8 @@ def get_dataset(input_path,
             batch_size,
             aug_train,
             include_z_array,
-            True
+            True,
+            seed=seed
         )
 
         val_dataset = create_dataset(
@@ -286,8 +287,9 @@ def get_dataset(input_path,
             batch_size,
             aug_val,
             include_z_array,
-            True
+            True,
+            seed=seed
         )
         dataset = train_dataset.concatenate(val_dataset)
 
-    return dataset.prefetch(1).repeat(epochs), dataset_length
+    return dataset.prefetch(1).repeat(), dataset_length

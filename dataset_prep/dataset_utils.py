@@ -63,7 +63,7 @@ def _preprocess_image(image, is_training, new_size):
         return image
 
 
-def _parse_record_orig(raw_record, is_training, new_size=64):
+def _parse_record_orig(raw_record, is_training, new_size=224):
     """Parse a single instance record
 
     Parameters:
@@ -104,7 +104,7 @@ def _parse_record_orig(raw_record, is_training, new_size=64):
     return image, label, orig_image
 
 
-def _parse_record_z(raw_record, is_training, new_size=64):
+def _parse_record_z(raw_record, is_training, new_size=224):
     """Parse a single instance record with differential recognition array
 
     Parameters:
@@ -124,7 +124,7 @@ def _parse_record_z(raw_record, is_training, new_size=64):
     feature_map = {
         'img': tf.FixedLenFeature([], dtype=tf.string),
         'label': tf.FixedLenFeature([], dtype=tf.int64),
-        'z_array': tf.FixedLenFeature([128], dtype=tf.float32)
+        'z_array': tf.FixedLenFeature([784], dtype=tf.float32)
     }
     features = tf.parse_single_example(raw_record, feature_map)
     image_bytes = tf.decode_raw(features["img"], tf.uint8)
@@ -141,11 +141,11 @@ def _parse_record_z(raw_record, is_training, new_size=64):
         new_size=new_size,
     )
 
-    return image, label, z_array
+    return image, z_array, label
 
 
 def create_dataset(filenames, batch_size, augment, z_layer,
-                   drop_remainder=False):
+                   drop_remainder=False, seed=None):
     """Creates a tf.data.Dataset from a list of .record filenames
 
     Parameters:
@@ -162,7 +162,7 @@ def create_dataset(filenames, batch_size, augment, z_layer,
     Returns:
         dataset: A 'tf.data.Dataset'
     """
-    filenames = tf.data.Dataset.list_files(filenames, shuffle=True)
+    filenames = tf.data.Dataset.list_files(filenames, shuffle=True, seed=seed)
     raw_dataset = tf.data.TFRecordDataset(filenames)
     if z_layer:
         parse_fun = _parse_record_z

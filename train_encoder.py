@@ -55,7 +55,7 @@ p_dataset, p_dataset_length = get_dataset(
     flags=['b', 'm'],
     flag_pos_1=64,
     flag_pos_2=67,
-    aug_train=False
+    aug_train='none'
 )
 
 im, label, full = dataset.make_one_shot_iterator().get_next()
@@ -67,6 +67,7 @@ val_steps = dataset_length[1] // BATCH_SIZE
 
 
 cae = ConvAutoencoder()
+
 
 reconstruction, prediction = cae(im, training=False)
 
@@ -130,6 +131,7 @@ with tf.Session() as sess:
     print("CAE Training Complete")
     print("Making Patient Records")
     count = 0
+    cae.summary()
     for pid in range(106 + 1):
         forig_img, label, z, rec = sess.run([orig_img, flabel, z_vector, frec])
         for i in range(label.shape[0]):

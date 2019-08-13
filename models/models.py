@@ -6,14 +6,14 @@ class ConvAutoencoder(tf.keras.Model):
 
     def __init__(self):
         super(ConvAutoencoder, self).__init__()
-        self.conv_1= tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')
-        self.conv_2= tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')
-        self.conv_3= tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')
-        self.code = tf.keras.layers.Conv2D(2, (1, 1), activation='relu', padding='same')
+        self.conv_1 = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')
+        self.conv_2 = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')
+        self.conv_3 = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')
+        self.code = tf.keras.layers.Conv2D(1, (1, 1), activation='relu', padding='same')
 
-        self.conv_6= tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')
-        self.conv_5= tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')
-        self.conv_4= tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')
+        self.conv_8 = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')
+        self.conv_7 = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')
+        self.conv_6 = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')
         self.decode = tf.keras.layers.Conv2D(3, (1, 1), activation='sigmoid')
 
 
@@ -22,25 +22,26 @@ class ConvAutoencoder(tf.keras.Model):
 
     def encode(self, inputs):
         x = self.conv_1(inputs)
-        x = tf.keras.layers.MaxPooling2D((2,2))(x)
+        x = tf.keras.layers.MaxPooling2D((2, 2))(x)
         x = self.conv_2(x)
-        x = tf.keras.layers.MaxPooling2D((2,2))(x)
+        x = tf.keras.layers.MaxPooling2D((2, 2))(x)
         x = self.conv_3(x)
-        x = tf.keras.layers.MaxPooling2D((2,2))(x)
+        x = tf.keras.layers.MaxPooling2D((2, 2))(x)
         return self.code(x)
 
 
     def reconstruct(self, code):
-        x = self.conv_4(code)
+        x = self.conv_6(code)
         x = tf.keras.layers.UpSampling2D((2, 2))(x)
-        x = self.conv_5(x)
+        x = self.conv_7(x)
         x = tf.keras.layers.UpSampling2D((2, 2))(x)
-        x = self.conv_6(x)
+        x = self.conv_8(x)
         x = tf.keras.layers.UpSampling2D((2, 2))(x)
         return self.decode(x)
 
     def z_score_layer(self, x):
         x = tf.keras.layers.Flatten()(x)
+        print(x.shape)
         mean, variance = tf.nn.moments(x, axes=[0])
         z = (x - mean) / tf.sqrt(variance)
         return z
